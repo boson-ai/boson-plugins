@@ -30,12 +30,20 @@ source = "https://github.com/boson-ai/boson-plugins.git"
 
 Then install **Boson TTS** (`boson-tts@boson-ai`) from the plugin list.
 
+### Get an API key
+
+1. Sign in at https://www.boson.ai/workspace
+2. Create a key at https://www.boson.ai/workspace/api-key (**Create API Key**; format `bai-...`)
+3. Claim the free trial credit on the same page — without credit, calls fail with `429 insufficient_quota`
+
+Full guide: https://docs.boson.ai/set-up-your-account
+
 ### Configure
 
 Set your API key (in `~/.zshrc` / `~/.bashrc`) and restart the agent:
 
 ```bash
-export BOSON_API_KEY=your_key_here
+export BOSON_API_KEY=bai-your-key
 ```
 
 Requirements: Python 3.8+. Optional: `ffmpeg` (needed to stitch long text into

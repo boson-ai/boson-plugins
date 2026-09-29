@@ -31,6 +31,13 @@ MODEL = "higgs-tts-3"
 FORMATS = ["mp3", "wav", "opus", "aac", "flac", "pcm"]
 MAX_INPUT_CHARS = 5000
 MAX_REF_BYTES = 10 * 1024 * 1024
+KEY_HELP = (
+    "Get a key: sign in at https://www.boson.ai/workspace, then create one at "
+    "https://www.boson.ai/workspace/api-key (keys look like bai-...). Claim the free "
+    "trial credit there too, or calls fail with 429 insufficient_quota. Then add "
+    "`export BOSON_API_KEY=bai-...` to your shell profile and restart the agent. "
+    "Guide: https://docs.boson.ai/set-up-your-account"
+)
 # Leading delivery tags (emotion/style/speed/pitch/expressiveness) apply to the
 # whole turn, so they are re-applied to every chunk.
 LEADING_TAGS_RE = re.compile(r"^\s*((?:<\|[a-z]+:[a-z_]+\|>\s*)+)")
@@ -112,6 +119,11 @@ def synthesize(base_url, api_key, payload, timeout):
                 return resp.read(), resp.headers.get("Content-Type", "")
         except urllib.error.HTTPError as e:
             body = e.read().decode(errors="replace")[:2000]
+            if e.code == 401:
+                die(f"HTTP 401 from Boson TTS (API key missing or invalid): {body}\n{KEY_HELP}")
+            if e.code == 429 and "insufficient_quota" in body:
+                die(f"HTTP 429 insufficient_quota: the account has no credit. Claim the free trial "
+                    f"credit or top up at https://www.boson.ai/workspace/billing/overview\n{body}")
             if e.code in (429, 500, 502, 503, 504) and attempt < 2:
                 time.sleep(2 ** attempt)
                 continue
@@ -169,7 +181,7 @@ def main():
 
     api_key = os.environ.get("BOSON_API_KEY")
     if not api_key:
-        die("BOSON_API_KEY is not set (get a key at https://boson.ai and `export BOSON_API_KEY=...`)")
+        die(f"BOSON_API_KEY is not set.\n{KEY_HELP}")
     base_url = os.environ.get("BOSON_BASE_URL", DEFAULT_BASE_URL)
 
     text = read_text(args).strip()
