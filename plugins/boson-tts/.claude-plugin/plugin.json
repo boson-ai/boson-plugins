@@ -1,0 +1,8 @@
+{
+  "name": "boson-tts",
+  "version": "0.1.0",
+  "description": "Text-to-speech with Boson AI Higgs TTS 3: preset voices, voice cloning, emotion/style tags, 100 languages",
+  "author": { "name": "Boson AI" },
+  "homepage": "https://docs.boson.ai/models/higgs-tts/overview",
+  "keywords": ["tts", "speech", "audio", "voice", "boson"]
+}
