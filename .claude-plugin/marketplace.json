@@ -11,7 +11,7 @@
       "name": "boson-tts",
       "source": "./plugins/boson-tts",
       "description": "Text-to-speech with Boson AI Higgs TTS 3: preset voices, voice cloning, emotion/style tags, 100 languages",
-      "version": "0.1.1"
+      "version": "0.1.0"
     }
   ]
 }
