@@ -11,12 +11,25 @@ SKILL.md; below it is written as `<skill-dir>/scripts/tts.py`, substitute the re
 absolute path). It uses only the Python standard library (ffmpeg optional, used to
 stitch long text into mp3/etc).
 
-## Prerequisite
+## Prerequisite: Boson API key
 
-`BOSON_API_KEY` must be set in the environment. If the script says it is missing,
-tell the user to `export BOSON_API_KEY=...` (e.g. in `~/.zshrc`). Never ask them to
-paste the key into chat, and never echo it. `BOSON_BASE_URL` optionally overrides
-`https://api.boson.ai/v1` (e.g. a staging endpoint).
+The script reads `BOSON_API_KEY` from the environment (`BOSON_BASE_URL` optionally
+overrides `https://api.boson.ai/v1`). If it is missing or rejected, the script exits
+with setup instructions — do not retry; walk the user through getting a key:
+
+1. Sign in / sign up at https://www.boson.ai/workspace (Google or email code).
+2. Open https://www.boson.ai/workspace/api-key → **Create API Key**, name it, and copy
+   it right away (format `bai-...`).
+3. Claim the **$10 free trial credit** from the banner on that page (or
+   https://www.boson.ai/workspace/billing/overview). Without credit or a positive
+   balance every call fails with `429 insufficient_quota`.
+4. Add `export BOSON_API_KEY=bai-...` to their shell profile (`~/.zshrc` / `~/.bashrc`),
+   then restart the agent so it picks up the variable.
+
+Full guide: https://docs.boson.ai/set-up-your-account
+
+Never ask the user to paste the key into chat, never echo or log it, and never write
+it into project files that could be committed.
 
 ## Usage
 
@@ -41,7 +54,8 @@ On success the script prints one JSON line, e.g.
 `{"output": "/abs/path/hello.mp3", "format": "mp3", "chunks": 1, "chars": 12, "bytes": 23456}`.
 Report the output path (and duration if present) to the user; if you can send files
 to the user, send the audio file. On failure it prints `error: HTTP <code> ...` to
-stderr — relay the server message (400 = bad params / input too long, 401 = bad key).
+stderr — relay the server message (400 = bad params / input too long; 401 = bad key and
+429 `insufficient_quota` = no credit, both explained above).
 
 ## Choosing a voice
 
